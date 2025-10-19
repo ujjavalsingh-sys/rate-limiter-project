@@ -7,29 +7,31 @@ This is a very simple end-to-end rate limiter project.
 3. There are 3 services
 4. There is 1 rate limiter working with 1 redis instance.
 
-                                                                                                 
-                                     ┌─────────────────┐                                         
-                                     │                 │                                         
-                     ┌──────────────►│    Service A    ├───────────────┐                         
-                     │               │ (Node + Express)│               │                         
-                     │               └─────────────────┘               │                         
-                     │                                                 │                         
-                     │                                                 │                         
-                     │                                                 ▼                         
- ┌──────┐     ┌──────┴─────────┐      ┌────────────────┐        ┌────────────────┐     ┌───────┐ 
- │      │     │                │      │                │        │                │     │       │ 
- │ User ┼─────►  Load Balancer ┼────► │   Service B    ├───────►│  Rate Limiter  ├────►│ Redis │ 
- │      │     │                │      │(Node + Express)│        │(Node + Express)│     │       │ 
- └──────┘     └──────┬─────────┘      └────────────────┘        └────────────────┘     └───────┘ 
-                     │                                                 ▲                         
-                     │                                                 │                         
-                     │                                                 │                         
-                     │                ┌────────────────┐               │                         
-                     │                │                │               │                         
-                     └───────────────►│   Service C    ├───────────────┘                         
-                                      │(Node + Express)│                                         
-                                      └────────────────┘                                         
-                                                                                                 
+                                                                    
+                                    ┌────────┐                              
+                                    │  User  │                              
+                                    └───┬────┘                              
+                                        │                                   
+                                        ▼                                   
+                                  ┌─────────────┐                           
+                                  │Load Balancer│                           
+                 ┌────────────────┤  (Nginx)    ├───────────────┐           
+                 │                └──────┬──────┘               │           
+                 ▼                       ▼                      ▼           
+         ┌────────────────┐     ┌─────────────────┐     ┌────────────────┐  
+         │  Service A     │     │   Service B     │     │  Service C     │  
+         │(Node + Express)│     │ (Node + Express)│     │(Node + Express)│  
+         └───────┬────────┘     └────────┬────────┘     └───────┬────────┘  
+                 │                       ▼                      │           
+                 │               ┌────────────────┐             │           
+                 │               │  Rate Limiter  │             │           
+                 └──────────────►│(Node + Express)│◄────────────┘           
+                                 └───────┬────────┘                         
+                                         ▼                                  
+                                     ┌───────┐                              
+                                     │ Redis │                              
+                                     └───────┘                              
+                                                                                                                                                                     
 
 ## Services
 The 3 services - Service A, Service B, Service C - are identical.
